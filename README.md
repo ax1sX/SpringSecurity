@@ -559,7 +559,7 @@ protected Object doZipTransform(final Message<?> message) throws Exception {
 
 ## （10）Spring Cloud Config
 ### CVE-2019-3799 Directory Traversal
-Affected Version: < 2.1.2 or 2.0.4 or 1.4.6 
+Affected Version: < 2.1.2 or 2.0.4 or 1.4.6  
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/3632fc6f64e567286c42c5a2f1b8142bfde505c2   
 POC:
 ```
@@ -618,7 +618,7 @@ public synchronized Resource findOne(String application, String profile, String 
 }
 ```
 ### CVE-2020-5405 Directory Traversal
-Affected Version: < 2.2.2 or 2.1.7 
+Affected Version: < 2.2.2 or 2.1.7  
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/651f458919c40ef9a5e93e7d76bf98575910fad0   
 POC:
 ```
@@ -668,7 +668,7 @@ private String resolveLabel(String label) {
 ```
 
 ### CVE-2020-5410 Directory Traversal
-Affected Version: < 2.2.2 or 2.1.7 
+Affected Version: < 2.2.2 or 2.1.7  
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/1c01d11b74ca08d04e89d935f4cafe1bd0e57c3c   
 POC:
 ```
