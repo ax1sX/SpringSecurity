@@ -503,11 +503,7 @@ private String removeJsessionid(String requestUri) {
     }
     return requestUri;
 }
-```
-
-### CVE-2016-2173 RCE
-Affected Version: < Spring AMQP 1.5.5  
-
+``` 
 
 ## （9）Spring Integration Zip
 ### CVE-2018-1261 Arbitrary File Write
