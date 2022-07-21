@@ -1,26 +1,26 @@
 # SpringSecurity
 A list for Spring Security
 
-| Spring Projects | CVE | Vulnerability Types | Version |
-|:---:|:---:|:---:|:---:|
-| Spring Cloud Function | CVE-2020-22979 | DoS | <3.2.6 |
-| Spring Cloud Function | CVE-2022-22963 | SpEL | <3.1.6 or <3.2.2 |
-| Spring Cloud Netflix Hystrix Dashboard | CVE-2021-22053 | SpEL | <2.2.9.REALEASE |
-| Spring Cloud Netflix Hystrix Dashboard | CVE-2020-5412 | SSRF | <2.2.4 or <2.1.6 |
-| Spring Cloud Gateway | CVE-2022-22947 | RCE | <3.1.1 or <3.0.7 |
-| Spring Cloud Config | CVE-2019-3799 | Directory Traversal | <2.1.2 or <2.0.4 or <1.4.6 |
-| Spring Cloud Config | CVE-2020-5405 | Directory Traversal | <2.2.2 or <2.1.7 |
-| Spring Cloud Config | CVE-2020-5410 | Directory Traversal | <2.2.2 or <2.1.7 |
-| Spring Data Commons | CVE-2018-1259 | XXE | <1.13.12 or <2.0.7 |
-| Spring Data Commons | CVE-2018-1273 | SpEL | <1.13.11 or <2.0.6 |
-| Spring Data Rest | CVE-2017-8046 | SpEL | <2.5.12 or <2.6.7 or <3.0 RC3 |
-| Spring Security OAuth2 | CVE-2016-4977 | SpEL | <2.0.9 or <1.0.5 |
-| Spring Security OAuth2 | CVE-2018-1260 | SpEL | <2.3.3 or <2.2.2 or <2.1.2 or <2.0.15 |
-| Spring Boot Actuator Logview | CVE-2021-21234 | Directory Traversal | <0.2.13 |
-| Spring Framework | CVE-2018-1270 | RCE | <5.0.5 or <4.3.15 |
-| Spring Framework | CVE-2020-5398 | Reflected File Download | <5.2.3 or <5.1.13 or <5.0.16 |
-| Spring Framework | CVE-2020-5421 | Reflected File Download | <5.2.8 or <5.1.17 or <5.0.18 |
-| Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write | <1.0.1 |
+| Spring Projects | CVE | Vulnerability Types |
+|:---:|:---:|:---:|
+| Spring Cloud Function | CVE-2020-22979 | DoS |
+| Spring Cloud Function | CVE-2022-22963 | SpEL |
+| Spring Cloud Netflix Hystrix Dashboard | CVE-2021-22053 | SpEL |
+| Spring Cloud Netflix Hystrix Dashboard | CVE-2020-5412 | SSRF |
+| Spring Cloud Gateway | CVE-2022-22947 | RCE |
+| Spring Cloud Config | CVE-2019-3799 | Directory Traversal |
+| Spring Cloud Config | CVE-2020-5405 | Directory Traversal |
+| Spring Cloud Config | CVE-2020-5410 | Directory Traversal |
+| Spring Data Commons | CVE-2018-1259 | XXE |
+| Spring Data Commons | CVE-2018-1273 | SpEL |
+| Spring Data Rest | CVE-2017-8046 | SpEL |
+| Spring Security OAuth2 | CVE-2016-4977 | SpEL |
+| Spring Security OAuth2 | CVE-2018-1260 | SpEL |
+| Spring Boot Actuator Logview | CVE-2021-21234 | Directory Traversal |
+| Spring Framework | CVE-2018-1270 | RCE |
+| Spring Framework | CVE-2020-5398 | Reflected File Download |
+| Spring Framework | CVE-2020-5421 | Reflected File Download |
+| Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write |
 
 
 ## （1）Spring Cloud Function
