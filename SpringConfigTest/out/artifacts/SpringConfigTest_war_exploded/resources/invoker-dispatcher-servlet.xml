@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix">
+            <value>/WEB-INF/jsp</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <bean id="userService" class="org.example.User.UserServiceImpl"/>
+
+    <bean name="/UserService" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+        <property name="serviceInterface" value="org.example.User.IUserService" />
+        <property name="service" ref="userService" />
+    </bean>
+
+<!--    <bean id="SimpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
+<!--        <property name="mappings">-->
+<!--            <props>-->
+<!--                <prop key="/user.service">serviceExporter</prop>-->
+<!--            </props>-->
+<!--        </property>-->
+<!--    </bean>-->
+<!--    <bean id="serviceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">-->
+<!--        <property name="service">-->
+<!--            <ref bean="userService"></ref>-->
+<!--        </property>-->
+<!--        <property name="serviceInterface">-->
+<!--            <value>org.example.User.IUserService</value>-->
+<!--        </property>-->
+<!--    </bean>-->
+</beans>
