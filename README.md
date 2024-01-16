@@ -15,6 +15,7 @@ A list for Spring Security
 | Spring Data Commons | CVE-2018-1273 | SpEL |
 | Spring Data Rest | CVE-2017-8046 | SpEL |
 | Spring Security| CVE-2022-22978 | Authorization Bypass |
+| Spring Security| CVE-2023-34034 | Authorization Bypass |
 | Spring Security OAuth2 | CVE-2016-4977 | SpEL |
 | Spring Security OAuth2 | CVE-2018-1260 | SpEL |
 | Spring Boot Actuator Logview | CVE-2021-21234 | Directory Traversal |
@@ -24,6 +25,7 @@ A list for Spring Security
 | Spring Framework | CVE-2022-22965 | RCE |
 | Spring Framework | CVE-2013-4152 | XXE |
 | Spring Framework | SpringConfigTest | RCE |
+| Spring Framework | CVE-2023-20860 | Authorization Bypass |
 | Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write |
 
 ## Programming Environment Setup
@@ -380,6 +382,14 @@ request.getPathInfo()：/Servlet Path/ or Null
 ```
 Summary: `.` in regular matches do not handle `\n`,`\r`
 
+#### CVE-2023-34034 Authorization Bypass
+Affected Version: 6.1.0 to 6.1.1, 6.0.0 to 6.0.4, 5.8.0 to 5.8.4, 5.7.0 to 5.7.9, 5.6.0 to 5.6.11
+
+Official description: 
+
+> Using "**" as a pattern in Spring Security configuration for WebFlux creates a mismatch in pattern matching between Spring Security and Spring WebFlux, and the potential for a security bypass.
+
+
 #### CVE-2016-4977 OAuth2 SpEL
 Affected Version: < 2.0.0-2.0.9 or 1.0.0-1.0.5
 
@@ -649,6 +659,15 @@ POST /SpringRCEDemo_war_exploded/hello?name=admin&age=2&Class.module.classLoader
 
 cmd: <%=Runtime.getRuntime().exec(request.getParameter("cmd"))%>
 ```
+
+#### CVE-2023-20860
+Affected Version: 6.0.0 <= x <= 6.0.6, 5.3.0 <= x <= 5.3.25, Versions older than 5.3 are not affected
+
+Official description: 
+
+> Using "**" as a pattern in Spring Security configuration with the mvcRequestMatcher creates a mismatch in pattern matching between Spring Security and Spring MVC, and the potential for a security bypass.
+
+Diff: https://github.com/spring-projects/spring-framework/commit/202fa5cdb3a3d0cfe6967e85fa167d978244f28a
 
 ### （9）Spring Integration Zip
 #### CVE-2018-1261 Arbitrary File Write
