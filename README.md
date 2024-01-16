@@ -17,6 +17,7 @@ A list for Spring Security
 | Spring Security| CVE-2022-22978 | Authorization Bypass |
 | Spring Security| CVE-2022-31692 | Authorization Bypass |
 | Spring Security| CVE-2023-34034 | Authorization Bypass |
+| Spring Security| CVE-2023-34035 | Authorization misconfigured |
 | Spring Security OAuth2 | CVE-2016-4977 | SpEL |
 | Spring Security OAuth2 | CVE-2018-1260 | SpEL |
 | Spring Boot Actuator Logview | CVE-2021-21234 | Directory Traversal |
@@ -397,6 +398,10 @@ Official description:
 
 > Using "**" as a pattern in Spring Security configuration for WebFlux creates a mismatch in pattern matching between Spring Security and Spring WebFlux, and the potential for a security bypass.
 
+#### CVE-2023-34035 Authorization misconfigured
+Affected Version: 5.8.0 to 5.8.4, 6.0.0 to 6.0.4, 6.1.0 to 6.1.1
+
+Ref: https://spring.io/security/cve-2023-34035/
 
 #### CVE-2016-4977 OAuth2 SpEL
 Affected Version: < 2.0.0-2.0.9 or 1.0.0-1.0.5
