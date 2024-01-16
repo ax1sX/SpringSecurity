@@ -15,6 +15,7 @@ A list for Spring Security
 | Spring Data Commons | CVE-2018-1273 | SpEL |
 | Spring Data Rest | CVE-2017-8046 | SpEL |
 | Spring Security| CVE-2022-22978 | Authorization Bypass |
+| Spring Security| CVE-2022-31692 | Authorization Bypass |
 | Spring Security| CVE-2023-34034 | Authorization Bypass |
 | Spring Security OAuth2 | CVE-2016-4977 | SpEL |
 | Spring Security OAuth2 | CVE-2018-1260 | SpEL |
@@ -29,6 +30,8 @@ A list for Spring Security
 | Spring Integration Zip | CVE-2018-1261 | Arbitrary File Write |
 
 ## Programming Environment Setup
+Spring Security Advisories: https://spring.io/security/
+
 SpringBoot: https://start.spring.io/
 
 Spring Projects Examples: https://github.com/spring-projects
@@ -381,6 +384,11 @@ request.getServletPath(): /admin/axisx\n\r
 request.getPathInfo()：/Servlet Path/ or Null
 ```
 Summary: `.` in regular matches do not handle `\n`,`\r`
+
+#### CVE-2022-31692 Authorization Bypass
+Affected Version: 5.7 to 5.7.5, 5.6 to 5.6.9 
+
+Ref: https://spring.io/security/cve-2022-31692/
 
 #### CVE-2023-34034 Authorization Bypass
 Affected Version: 6.1.0 to 6.1.1, 6.0.0 to 6.0.4, 5.8.0 to 5.8.4, 5.7.0 to 5.7.9, 5.6.0 to 5.6.11
